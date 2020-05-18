@@ -1,0 +1,179 @@
+openapi: 3.0.0
+info:
+  title: Portability Request API
+  description: 'Internal API'
+  version: 0.0.1
+  
+security: 
+  - authenticationToken: []
+
+paths:
+  /v1/payroll/portability:
+    post:
+      summary: Creates a Portability Request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - employer_cnpj
+                - employer_business_name
+                - issuer_id
+              properties:
+                employer:
+                  type: object
+                  properties:
+                    identification:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                        number:
+                          type: string
+                    company_name:
+                      type: string
+      responses:
+        '200':
+          description: Description
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  date_created:
+                    type: string
+                  status:
+                    type: string
+                  employer:
+                    type: object
+                    properties:
+                      identification:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          number:
+                            type: string
+                          company_name:
+                            type: string
+        '401':
+          $ref: "#/components/responses/unauthorizedError"
+
+  /v1/payroll/portability/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: 'The Portability Request id'
+        required: true
+        schema:
+          type: string
+    get:
+      summary: 'Gets a Portability Request by id'
+      responses:
+        '200':
+          description: ''
+          content:
+            appication/json:
+              schema:
+                $ref: '#/components/schemas/portabilityRequest'
+        '401':
+          $ref: "#/components/responses/unauthorizedError"
+
+    delete:
+      summary: 'Cancels a Portability Request'
+      responses:
+        '204':
+          description: 'The Poratbility Request has been canceled'
+        '401':
+          $ref: "#/components/responses/unauthorizedError"
+  /v1/payroll/portability/search:
+    parameters:
+      - in: query
+        name: access_token
+        description: 'The access token'
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: status
+        description: 'Portability Request status'
+        required: false
+        schema:
+          type: string
+    get:
+      summary: 'Gets the list of Portability Requests for a user in a given state'
+      responses:
+        '200':
+          description: 'List of Portability Request for the given user in the given state'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/portabilityRequest'
+  /v1/payroll/portability/financialInstitutions:
+    get:
+      summary: 'Gets available Financial Institution Information'
+      responses:
+        '200':
+          description: 'Returns de list of available Financial Institutions to request for Portability'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/financialInstitution'
+
+components:
+  schemas:
+    portabilityRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        employer_cnpj:
+          type: string
+        employer_business_name:
+          type: string
+        payroll_bank_id:
+          type: string
+        status_id:
+          type: string
+        status_description:
+          type: string
+      example:
+        id: '561fe194-8a3e-11ea-bc55-0242ac130003'
+        employer_cnpj: '62054242000115'
+        employer_business_name: 'Stella e Alessandra Locações de Automóveis Ltda'
+        payroll_bank_id: '001'
+        status_description: 'approved'
+    financialInstitution:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      example: 
+        id: '001'
+        name: 'Banco do Brasil'
+
+  securitySchemes:
+    authenticationToken:
+      type: apiKey
+      in: header
+      name: X-Authentication-Token
+
+  responses:
+    unauthorizedError:
+      description: Authentication Token is missing or invalid
+      headers:
+        X-Authentication-Token:
+          schema:
+            type: string
+            
+
