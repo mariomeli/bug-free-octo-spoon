@@ -1,2 +1,2 @@
 # bug-free-octo-spoon
-YAML para Portabilidad Salarial en MLB
+YAML para Portabilidad Salarial en MLB.
